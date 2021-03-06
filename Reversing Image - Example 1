@@ -1,0 +1,63 @@
+// Includes 
+// ------------------------------------------------
+// ------------------------------------------------
+#include <SSD1320_OLED.h>
+#include "graphics.h"       // stores all bitmap graphics
+
+// pgmspace
+#if (defined(__AVR__))
+  #include <avr/pgmspace.h>
+#else
+  #include <pgmspace.h>
+#endif
+
+
+// Pins
+// ------------------------------------------------
+// ------------------------------------------------
+#define OLED_CS 10          // Chip Select, OLED
+#define OLED_RES 9          // Reset, OLED
+
+
+// OLED Display Instance
+SSD1320 flexibleOLED(OLED_CS, OLED_RES);
+
+// Setup
+// ------------------------------------------------
+// ------------------------------------------------
+void setup() {
+    // Begin Serial for Debug
+    Serial.begin(115200);
+
+    pinMode(OLED_CS,OUTPUT);
+
+    // Init OLED Display (Display is 160 wide, 32 high)
+    flexibleOLED.begin(160, 32);
+
+    // Load Graphic
+    loadImage(macaque,sizeof(macaque));
+}
+
+// Main Loop 
+// ------------------------------------------------  
+// ------------------------------------------------
+void loop() {
+      delay(2000);
+      flexibleOLED.flipVertical(true);
+      delay(2000);
+      flexibleOLED.flipVertical(false);
+}
+
+void loadImage(const unsigned char *image, int imageSize){
+    flexibleOLED.setRowAddress(0);
+    flexibleOLED.setColumnAddress(0);
+    //Send the bytes from program memory to OLED display
+    for (int i = 0 ; i < imageSize ; i++)
+    {
+      byte theByte = pgm_read_byte(image + i);
+    
+      flexibleOLED.data(theByte); //Write byte directly to display
+    }
+}
+
+//Source = https://forum.arduino.cc/index.php?topic=558748.0
