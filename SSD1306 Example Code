@@ -1,0 +1,10 @@
+display.clearDisplay();
+
+ display.setTextSize(2); // Draw 2X-scale text
+display.setTextColor(SSD1306_WHITE);
+display.setCursor(10, 0);
+display.println(F("scroll"));
+display.display(); // Show initial text
+delay(100);
+
+//SSD1306 Example Code
