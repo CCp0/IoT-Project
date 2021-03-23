@@ -1,0 +1,69 @@
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#include <math.h>
+const int B=4275; // B value of the thermistor
+const int R0 = 100000; // R0 = 100k
+const int pinTempSensor = A0; // Grove - Temperature Sensor connect to A0
+//Defining everything
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 32 // OLED display height, in pixels
+#define SIGNAL_PIN 2 // Infrared
+//Initializing for screen yun
+#define OLED_RESET -1 // Reset pin
+#define SCREEN_ADDRESS 0x3C //0x3C for 128x32
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+void setup() {
+Serial.begin(9600);
+//Infrared setup
+pinMode(SIGNAL_PIN, INPUT);
+// SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+Serial.println(F("SSD1306 allocation failed"));
+for(;;); // Don't proceed, loop forever
+}
+ // Show initial display buffer contents on the screen --
+// the library initializes this with an Adafruit splash screen.
+display.display();
+delay(2000); // Pause for 2 seconds
+ // Clear the buffer
+display.clearDisplay();
+ // Show the display buffer on the screen. You MUST call display() after
+// drawing commands to make them visible on screen!
+display.display();
+delay(2000);
+ // Invert display
+display.invertDisplay(true);
+}
+void loop() {
+}
+void text(void) {
+display.clearDisplay(); // Clears the display of previous info
+display.setTextSize(2); // Draw 2X-scale text
+display.setTextColor(SSD1306_WHITE);
+display.setCursor(10, 0);
+display.println(F("Test Text")); //Testing display
+display.display(); // Show initial text
+delay(100);
+int a = analogRead(pinTempSensor);
+float R = 1023.0/a-1.0;
+R = R0*R;
+float temperature = 1.0/(log(R/R0)/B+1/298.15)-273.15; // convert to temperature via datasheet
+display.clearDisplay(); // Clears the display of previous info
+display.print("temperature = "); //Prints on oled
+display.println(temperature);
+Serial.print("temperature = "); //Prints on serial monitor
+Serial.println(temperature);
+delay(100);
+//Infrared Code
+if(digitalRead(SIGNAL_PIN)==HIGH) { //When the sensor detects movement with infrared readings
+Serial.println("Movement detected.");
+display.print("Movement detected.");
+} else {
+Serial.println("Did not detect movement.");
+display.print("Did not detect movement.");
+}
+delay(1000);
+}
