@@ -5,6 +5,7 @@
 #include <Arduino.h>
 #include <math.h>
 
+//Temperature details
 const int B = 4275;               // B value of the thermistor
 const int R0 = 100000;            // R0 = 100k
 const int pinTempSensor = A0;     // Grove - Temperature Sensor connect to A0
@@ -17,6 +18,7 @@ const int pinTempSensor = A0;     // Grove - Temperature Sensor connect to A0
 #define debug  Serial
 #endif
 
+//Display details and libraries
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
 #define SIGNAL_PIN 9
@@ -24,6 +26,14 @@ const int pinTempSensor = A0;     // Grove - Temperature Sensor connect to A0
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+//Blynk API
+#define BLYNK_PRINT Serial
+
+#include <Bridge.h>
+#include <BlynkSimpleYun.h>
+//Blynk authentication code
+char auth[] = "zryzfTCbTrsvhtrjn7DfK28G-q7GidO2";
 const unsigned char Logo [] PROGMEM = {// 'Logo - White', 128x64px 
 0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0xef, 0xc0, 0x07, 0xff, 0xe0, 0x00, 0x00, 0x00, 0x00, 0x00, 
 0x00, 0x00, 0x00, 0x00, 0x00, 0x3f, 0xff, 0xf8, 0x3f, 0xff, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x00, 
@@ -73,6 +83,7 @@ const unsigned char Logo [] PROGMEM = {// 'Logo - White', 128x64px
 };
 void setup() {
   Serial.begin(9600);
+  Blynk.begin(auth); //Starts Blynk
   pinMode(SIGNAL_PIN, INPUT);
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3c)) {
@@ -95,6 +106,7 @@ void setup() {
 }
 
 void loop() {
+  Blynk.run(); //Starts uploading data to blynk
   int a = analogRead(pinTempSensor);
   float R = 1023.0 / a - 1.0;
   R = R0 * R;
