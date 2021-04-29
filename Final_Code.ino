@@ -17,6 +17,7 @@
 
 //Blynk API
 char auth[] = "zryzfTCbTrsvhtrjn7DfK28G-q7GidO2";
+BlynkTimer timer; //Sets up reading intervals
 #define BLYNK_PRINT Serial
 
 #define SIGNAL_PIN 9 //IR Sensor pin
@@ -99,6 +100,7 @@ void setup() {
 
 void loop() {
   Blynk.run();//Uploads data to blynk
+  timer.run();
   display.clearDisplay(); //Removes the previous print
   display.setTextSize(2); // Draw 2X-scale text
   display.setTextColor(SSD1306_WHITE);
@@ -113,5 +115,6 @@ void loop() {
     Serial.println("");
     display.println("");
     display.display();
+    delay(500); //Small delay to keep Blynk from being overloaded with info
   }
 }
